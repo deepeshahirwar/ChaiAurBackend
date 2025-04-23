@@ -1,0 +1,20 @@
+{
+  "name": "fullstack1",
+  "version": "1.0.0",
+  "description": "fullstack basic project",
+  "main": "server.js", 
+  "type":"module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "chai",
+    "aur",
+    "code"
+  ],
+  "author": "Deepesh Ahirwar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

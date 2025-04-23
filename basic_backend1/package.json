@@ -1,0 +1,22 @@
+{
+  "name": "chaibackend1",
+  "version": "1.0.0",
+  "description": "a basic app to deploy",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "Hitesh",
+    "Deepesh"
+  ],
+  "author": "Deepesh Ahirwar",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

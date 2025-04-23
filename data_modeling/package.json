@@ -1,0 +1,19 @@
+{
+  "name": "data_modeling",
+  "version": "1.0.0",
+  "description": "data modling",
+  "main": "server.js",
+  "scripts": {
+     "server": "nodemon server.js"
+  },
+  "keywords": [
+    "deepesh",
+    "hitesh"
+  ],
+  "author": "deepesh ahirwar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.13.2"
+  }
+}
