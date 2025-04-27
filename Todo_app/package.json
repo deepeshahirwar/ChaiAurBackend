@@ -1,0 +1,26 @@
+{
+  "name": "todos",
+  "version": "1.0.0",
+  "description": "A simple todo app",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "deepesh",
+    "backend"
+  ],
+  "author": "Deepesh Ahirwar",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.14.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
