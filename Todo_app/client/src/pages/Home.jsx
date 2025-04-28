@@ -10,6 +10,7 @@ const Home = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [todos, setTodos] = useState([]);
+  const [editingTodoId, setEditingTodoId] = useState(null); // Track the todo being edited
 
   // Fetch all todos
   const fetchTodo = async () => {
@@ -29,8 +30,8 @@ const Home = () => {
     fetchTodo();
   }, []);
 
-  // Add new todo
-  const addTodoHandler = async () => {
+  // Add or update todo
+  const handleTodoSubmit = async () => {
     if (!title.trim() || !description.trim()) {
       toast.error("Title and Description cannot be empty.", {
         position: "top-center"
@@ -38,43 +39,97 @@ const Home = () => {
       return;
     }
 
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/todo",
-        { title, description },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
+    if (editingTodoId) {
+      // Update existing todo
+      try {
+        const res = await axios.put(
+          `http://localhost:3000/api/v1/todo/${editingTodoId}`,
+          { title, description },
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (res.data.success) {
+          console.log('Todo updated:', res.data);
+          toast.success("Todo updated successfully.", {
+            position: "top-center",
+          });
+          fetchTodo();
+          setEditingTodoId(null); // Reset editing state
+          setTitle('');
+          setDescription('');
+        } else {
+          toast.error("Failed to update Todo.", { position: "top-center" });
         }
-      );
+      } catch (error) {
+        console.log("Error in handleTodoSubmit (update):", error);
+        toast.error("Todo not updated.", { position: "top-center" });
+      }
+    } else {
+      // Add new todo
+      try {
+        const res = await axios.post(
+          "http://localhost:3000/api/v1/todo",
+          { title, description },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+          }
+        );
+
+        if (res.data.success) {
+          console.log('New todo added:', res.data);
+          toast.success("Todo created successfully.", {
+            position: "top-center",
+          });
+          fetchTodo();
+          setTitle('');
+          setDescription('');
+        } else {
+          toast.error("Failed to create Todo.", { position: "top-center" });
+        }
+      } catch (error) {
+        console.log("Error in handleTodoSubmit (add):", error);
+        toast.error("Todo not created.", { position: "top-center" });
+      }
+    }
+  };
+
+  // Delete todo
+  const deleteTodoHandler = async (id) => {
+    try {
+      const res = await axios.delete(`http://localhost:3000/api/v1/todo/${id}`, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
-        console.log('New todo added:', res.data);
-        toast.success("Todo created successfully.", {
-          position: "top-center",
-        });
-
-        // Instead of manually adding, re-fetch the updated list
+        console.log('Todo deleted:', res.data);
+        toast.success("Todo deleted successfully.", { position: "top-center" });
         fetchTodo();
-
-        setTitle('');
-        setDescription('');
       } else {
-        toast.error("Failed to create Todo.", { position: "top-center" });
+        toast.error("Failed to delete Todo.", { position: "top-center" });
       }
     } catch (error) {
-      console.log("Error in addTodoHandler:", error);
-      toast.error("Todo not created.", { position: "top-center" });
+      console.log("Error in deleteTodoHandler:", error);
+      toast.error("Todo not deleted.", { position: "top-center" });
     }
+  };
+
+  // Edit todo
+  const editTodoHandler = (todo) => {
+    setTitle(todo.title);
+    setDescription(todo.description);
+    setEditingTodoId(todo._id); // Set the id of the todo being edited
   };
 
   return (
     <>
       <Navbar />
 
-      {/* Title input and Add button */}
+      {/* Title input and Add/Update button */}
       <div className="flex items-center justify-center space-x-4 p-4">
         <Input
           value={title}
@@ -85,10 +140,12 @@ const Home = () => {
         />
 
         <Button
-          onClick={addTodoHandler}
-          className="bg-blue-600 text-white font-semibold px-4 py-2 rounded hover:bg-blue-700"
+          onClick={handleTodoSubmit}
+          className={`${
+            editingTodoId ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+          } text-white font-semibold px-4 py-2 rounded`}
         >
-          Add Todo
+          {editingTodoId ? 'Update Todo' : 'Add Todo'}
         </Button>
       </div>
 
@@ -113,7 +170,22 @@ const Home = () => {
                   className="bg-white p-6 rounded-lg shadow-lg mb-4 border-l-4 border-r-4 border-blue-500 hover:bg-blue-500"
                 >
                   <h2 className="text-2xl font-semibold text-gray-800">{todo.title || "No Title"}</h2>
-                  <p className="text-gray-600 mt-2">{todo.description || "No Description"}</p>
+                  <p className="text-gray-600 font-sans mt-2">{todo.description || "No Description"}</p>
+
+                  {/* Delete and edit todo */}
+                  <Button
+                    onClick={() => deleteTodoHandler(todo._id)}
+                    className="bg-red-600 text-white mt-4 font-semibold px-4 py-2 rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </Button>
+
+                  <Button
+                    onClick={() => editTodoHandler(todo)}
+                    className="bg-yellow-600 text-white font-semibold px-4 py-2 rounded ml-4 hover:bg-yellow-700"
+                  >
+                    Edit
+                  </Button>
                 </div>
               )
             ))
