@@ -4,13 +4,17 @@ import Navbar from '@/pages/Navbar';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import axios from 'axios';
-import { toast } from 'sonner';
+import { toast } from 'sonner'; 
+import { useNavigate} from 'react-router-dom';
 
 const Home = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [todos, setTodos] = useState([]);
-  const [editingTodoId, setEditingTodoId] = useState(null); // Track the todo being edited
+  const [editingTodoId, setEditingTodoId] = useState(null); // Track the todo being edited 
+
+
+  const navigate = useNavigate();
 
   // Fetch all todos
   const fetchTodo = async () => {
@@ -123,11 +127,32 @@ const Home = () => {
     setTitle(todo.title);
     setDescription(todo.description);
     setEditingTodoId(todo._id); // Set the id of the todo being edited
+  }; 
+
+  // mark as completed 
+ const todoCompleteHandler = async (id) => {
+    try {
+      const res = await axios.put(`http://localhost:3000/api/v1/todo/${id}/complete`, {}, {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        toast.success("Todo marked as completed");
+  
+        // update the state locally if you use useState
+        setTodos(prev =>
+          prev.map(todo => todo._id === id ? { ...todo, completed: true } : todo)
+        );
+      }
+    } catch (error) {
+      console.error("Error completing todo:", error);
+      toast.error("Failed to mark as completed");
+    }
   };
+  
 
   return (
     <>
-      <Navbar />
+     
 
       {/* Title input and Add/Update button */}
       <div className="flex items-center justify-center space-x-4 p-4">
@@ -157,6 +182,19 @@ const Home = () => {
           placeholder="Write a description here..."
           className="w-108 h-40 p-4 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
+      </div> 
+ 
+
+      {/* Filter buttons */} 
+      <div className='flex items-center justify-center space-x-4 py-8 '> 
+      <Button  
+       onClick={() => navigate('/completed')}
+       className="bg-blue-700 text-white hover:bg-blue-600">Completed Todos</Button> 
+       
+       <Button 
+        onClick={() => navigate('/incompleted')}
+        className="bg-green-500 text-white hover:bg-green-400">InCompleted Todos</Button> 
+
       </div>
 
       {/* All Todos Display */}
@@ -167,7 +205,7 @@ const Home = () => {
               todo && (
                 <div
                   key={todo._id || index}
-                  className="bg-white p-6 rounded-lg shadow-lg mb-4 border-l-4 border-r-4 border-blue-500 hover:bg-blue-500"
+                  className="bg-white p-6 rounded-lg shadow-lg mb-4 border-l-4 border-r-4 border-blue-500 hover:bg-slate-200"
                 >
                   <h2 className="text-2xl font-semibold text-gray-800">{todo.title || "No Title"}</h2>
                   <p className="text-gray-600 font-sans mt-2">{todo.description || "No Description"}</p>
@@ -185,7 +223,17 @@ const Home = () => {
                     className="bg-yellow-600 text-white font-semibold px-4 py-2 rounded ml-4 hover:bg-yellow-700"
                   >
                     Edit
-                  </Button>
+                  </Button> 
+
+                  <Button
+                    onClick={() => todoCompleteHandler(todo._id)}
+                   className={`${
+                   todo.completed ? 'bg-blue-700 ' : 'bg-green-600 hover:bg-green-700'
+                  } text-white font-semibold px-4 py-2 rounded ml-4`}
+                  disabled={todo.completed}
+                        >
+                     {todo.completed ? 'Completed' : 'Mark as Completed'}
+                    </Button>
                 </div>
               )
             ))

@@ -1,5 +1,5 @@
 import express from 'express'; 
-import {createTodo, deleteTodo, getAllTodos, updateTodo} 
+import {createTodo, deleteTodo, getAllTodos, updateTodo, markTodoAsCompleted} 
  from '../controllors/todo.control.js';   
   
 
@@ -15,6 +15,10 @@ router.route('/')
 router.route('/:todoId')
 .put(isAuthenticated  ,updateTodo)
 .delete(isAuthenticated  ,deleteTodo); 
+
+router.route('/:todoId/complete')
+  .put(isAuthenticated, markTodoAsCompleted);
+
 
 
 

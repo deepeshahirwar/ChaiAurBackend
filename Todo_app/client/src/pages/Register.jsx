@@ -24,7 +24,57 @@ const Register = () => {
     };
 
     const registerHandler = async () => {
-        try {
+        try { 
+            // if same email and password 
+            if (!user.username.trim() || !user.email.trim() || !user.password.trim()) {
+                toast.error("Username, Email and Password cannot be empty.", {
+                    position: "top-center"
+                });
+                return;
+            }
+            // if password length is less than 6
+            if (user.password.length < 6) {
+                toast.error("Password must be at least 6 characters long.", {
+                    position: "top-center"
+                });
+                return;
+            }
+            // if email is not valid
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(user.email)) {
+                toast.error("Email is not valid.", {
+                    position: "top-center"
+                });
+                return;
+            }
+            // if username is not valid
+            const usernamePattern = /^[a-zA-Z0-9_]+$/;
+            if (!usernamePattern.test(user.username)) {
+                toast.error("Username is not valid. Only alphanumeric characters and underscores are allowed.", {
+                    position: "top-center"
+                });
+                return;
+            }
+            // if password is not valid
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+            if (!passwordPattern.test(user.password)) {
+                toast.error("Password must contain at least one uppercase letter, one lowercase letter, and one number.", {
+                    position: "top-center"
+                });
+                return;
+            }
+            // if username is not valid
+             usernamePattern = /^[a-zA-Z0-9_]+$/;
+            if (!usernamePattern.test(user.username)) {
+                toast.error("Username is not valid. Only alphanumeric characters and underscores are allowed.", {
+                    position: "top-center"
+                });
+                return;
+            } 
+
+            // username or email or password is already exist 
+           
+
             const res = await axios.post(
                 "http://localhost:3000/api/v1/user/register",
                 { username: user.username , email: user.email, password: user.password }, // Send email and password in the request
@@ -34,7 +84,15 @@ const Register = () => {
                     },
                     withCredentials: true,
                 }
-            );
+            ); 
+
+            // if user is already exist
+            if (res.data.success === false) {
+                toast.error(res.data.message, {
+                    position: "top-center"
+                });
+                return;
+            }
 
             if (res.data.success) { 
                 console.log(res.data.message);

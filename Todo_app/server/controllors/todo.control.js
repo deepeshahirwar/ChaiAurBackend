@@ -103,4 +103,33 @@ export const deleteTodo = async (req, res)=> {
      })
         
     }
+}; 
+
+// mark as completed 
+export const markTodoAsCompleted = async (req, res) => {
+  try {
+    const todoId = req.params.todoId;
+
+    const updatedTodo = await Todo.findByIdAndUpdate(
+      todoId,
+      { completed: true },
+      { new: true }
+    );
+
+    if (!updatedTodo) {
+      return res.status(404).json({ success: false, message: 'Todo not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Todo marked as completed',
+      todo: updatedTodo
+    });
+  } catch (error) {
+    console.error("Error in markTodoAsCompleted:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to mark todo as completed'
+    });
+  }
 };

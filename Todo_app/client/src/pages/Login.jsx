@@ -39,6 +39,7 @@ const Login = () => {
 
             if (res.data.success) { 
                 console.log(res.data.message);
+               
                 toast.success("User login successfully.", {
                     position: 'top-center',  // Customize the position directly here
                 });
