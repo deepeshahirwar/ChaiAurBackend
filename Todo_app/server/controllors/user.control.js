@@ -111,11 +111,13 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (_, res)=>{
        try { 
     // set token empty for logout user
+       
          return res.status(200)
          .cookie("token","", {maxAge: 0}).json({
             success : true,
             message: "User logout successfully ."
-         })
+         }) 
+         
         
        } catch (error) {
         console.error("Error in logoutUser:", error);

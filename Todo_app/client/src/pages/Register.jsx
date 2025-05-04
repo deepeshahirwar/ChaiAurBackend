@@ -3,16 +3,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios'; 
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import GoBackButton from '@/components/ui/GoBackButton'; // Import the GoBackButton component
 
-
-
-const Login = () => { 
+const Register = () => { 
  const navigate = useNavigate();
 
 
-    const [user, setUser] = useState({
+    const [user, setUser] = useState({ 
+        username:"",
         email: "",
         password: ""
     });
@@ -24,11 +23,11 @@ const Login = () => {
         });
     };
 
-    const loginHandler = async () => {
+    const registerHandler = async () => {
         try {
             const res = await axios.post(
-                "http://localhost:3000/api/v1/user/login",
-                { email: user.email, password: user.password }, // Send email and password in the request
+                "http://localhost:3000/api/v1/user/register",
+                { username: user.username , email: user.email, password: user.password }, // Send email and password in the request
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -39,33 +38,39 @@ const Login = () => {
 
             if (res.data.success) { 
                 console.log(res.data.message);
-                toast.success("User login successfully.", {
+                toast.success("User Registered successfully.", {
                     position: 'top-center',  // Customize the position directly here
                 });
                 navigate('/');
 
             }
         } catch (error) {
-            toast.error("User Login failed.",{
+            toast.error("User Register failed.",{
                 position:'top-center',
             });
-            console.log("Error in loginHandler:", error);
+            console.log("Error in registerHandler:", error);
         }
     };
 
     return (  
-        <> 
-        <GoBackButton /> {/* Add the GoBackButton component here */}
-       
+        <>
+          <GoBackButton /> {/* Add the GoBackButton component here */}
         <div className="min-h-screen 
         flex items-center justify-center
-         bg-gradient-to-r from-blue-300 to-blue-600"> 
-        
-       
+         bg-gradient-to-r from-blue-300 to-blue-600">
         <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm">
-            <h1 className="text-3xl font-extrabold text-blue-600 mb-6 text-center">Login</h1>
+            <h1 className="text-3xl font-extrabold text-blue-600 mb-6 text-center">Register</h1>
 
-            <div className="space-y-6">
+            <div className="space-y-6"> 
+            <Input
+                    name="username"
+                    value={user.username}
+                    onChange={changeHandler}
+                    type="text"
+                    placeholder="Enter your username"
+                    className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                /> 
+
                 <Input
                     name="email"
                     value={user.email}
@@ -84,23 +89,22 @@ const Login = () => {
                 />
 
                 <Button
-                    onClick={loginHandler}
+                    onClick={registerHandler}
                     className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 text-xl"
                 >
-                    Login
-                </Button>
-            </div>  
-            {/*  if you don't have an account,  */}
-            <div className="mt-4 text-center">
-                <p className="text-gray-600">Don't have an account? 
-                    <a href="/register" className="text-blue-600 font-semibold"> Register</a>
-                </p>
-            </div> 
+                   Register
+                </Button> 
 
+
+            </div> 
+            {/* if you have already account */}
+            <p className="text-center mt-4">
+                Already have an account? <a href="/login" className="text-blue-600">Login here</a>
+            </p>
         </div>
     </div> 
     </>
     );
 };
 
-export default Login;
+export default Register;
